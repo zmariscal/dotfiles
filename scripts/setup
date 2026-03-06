@@ -1,0 +1,14 @@
+#!/bin/bash
+DOTFILES_ROOT=$(pwd)
+
+echo "Linking AGENTS.md to home instructions..."
+ln -sf "$DOTFILES_ROOT/AGENTS.md" "$HOME/.claude_agent_instructions.md"
+
+echo "Linking files to home directory..."
+find "$DOTFILES_ROOT/files/home" -type f | while read -r src; do
+    rel_path=${src#$DOTFILES_ROOT/files/home/}
+    dest="$HOME/$rel_path"
+    mkdir -p "$(dirname "$dest")"
+    ln -sf "$src" "$dest"
+    echo "Linked: $rel_path"
+done
