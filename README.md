@@ -25,6 +25,7 @@ This repository uses a **mirror structure**. Everything in `files/home/` is syml
 - **Rails Performance**: Optimization for database queries and Sidekiq jobs.
 - **RSpec Testing**: Modern mocking (verifying doubles) and speed-focused spec suites.
 - **Modern Ruby**: Idiomatic use of Ruby 3+ (Pattern matching, endless methods).
+- **Vanilla Rails**: Conventional Rails — readable Ruby, REST resources, thin controllers, rich models, shallow jobs.
 - **Skill Creator**: A meta-skill for generating new instructions for this repo.
 
 ## 🚀 Installation

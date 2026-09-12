@@ -1,8 +1,21 @@
+---
+name: vanilla-rails
+description: >
+  Build conventional Ruby on Rails applications using Rails defaults, REST
+  resources, thin controllers that call rich domain models, and readable Ruby:
+  expanded conditionals over nested guards, methods ordered by visibility then
+  invocation, bang methods only with a non-bang counterpart, and shallow jobs
+  with _later/_now. Use when writing, reviewing, or refactoring Rails or Ruby,
+  when the user runs /vanilla-rails, or when they mention vanilla Rails, style,
+  guard clauses, method order, bang methods, CRUD resources, service objects,
+  or how code should read.
+---
+
 # Vanilla Rails Skill
 
-## Goal
-
 Help zmariscal build and maintain conventional Ruby on Rails applications using Rails defaults, RESTful design, rich domain models, and clear, readable Ruby. Favor solutions that fit naturally within a standard Rails codebase and are a pleasure to read and maintain.
+
+Hold a high bar on every change. Care about how code reads, how it looks, and how it feels.
 
 ## Philosophy
 
@@ -15,27 +28,108 @@ Help zmariscal build and maintain conventional Ruby on Rails applications using 
 
 ## General Approach
 
-- Follow existing project conventions before proposing new ones.
+- Follow existing project conventions before proposing new ones. When writing new code, find similar code in the same codebase and follow it.
 - Prefer small, targeted changes over broad refactors.
 - When suggesting code, make it idiomatic Ruby and Rails.
 - Preserve backwards compatibility unless the task explicitly allows breaking changes.
 - Call out tradeoffs when there is more than one reasonable approach.
 - Prefer concrete, conventional file placements and APIs over framework-like internal abstractions.
+- If a smell is unclear, raise it in the pull request rather than inventing a new pattern.
 
 ## Ruby Style
 
-- Prefer readability over cleverness.
-- In general, prefer expanded conditionals over guard clauses when that makes the flow easier to read.
-- Use early returns sparingly, mainly when they appear at the top of a method and make a longer method easier to understand.
-- Order methods clearly:
-  - class methods first
-  - public methods next, with `initialize` first when present
-  - private methods last
-- Order methods vertically by invocation flow when practical, so readers can follow execution top-to-bottom.
-- Do not use `!` merely to signal that a method changes state.
-- Prefer `!` only when there is a meaningful non-bang counterpart.
-- For classes, do not add a blank line under `private` or other visibility modifiers, and indent methods beneath them if that matches the style being followed.
-- Keep methods focused and reasonably small.
+Prefer readability over cleverness. Keep methods focused and reasonably small.
+
+### Conditional returns
+
+Prefer expanded conditionals over guard clauses. Nested guards are hard to read.
+
+```ruby
+# Bad
+def todos_for_new_group
+  ids = params.require(:todolist)[:todo_ids]
+  return [] unless ids
+  @bucket.recordings.todos.find(ids.split(","))
+end
+
+# Good
+def todos_for_new_group
+  if ids = params.require(:todolist)[:todo_ids]
+    @bucket.recordings.todos.find(ids.split(","))
+  else
+    []
+  end
+end
+```
+
+Guard clauses are fine only when both are true:
+
+- The return is at the beginning of the method.
+- The rest of the method is not trivial and spans several lines.
+
+```ruby
+def after_recorded_as_commit(recording)
+  return if recording.parent.was_created?
+
+  if recording.was_created?
+    broadcast_new_column(recording)
+  else
+    broadcast_column_change(recording)
+  end
+end
+```
+
+### Methods ordering
+
+Order methods in a class:
+
+1. `class` methods
+2. `public` methods, with `initialize` first
+3. `private` methods
+
+Order methods vertically by invocation so readers can follow the flow top to bottom.
+
+```ruby
+class SomeClass
+  def some_method
+    method_1
+    method_2
+  end
+
+  private
+    def method_1
+      method_1_1
+      method_1_2
+    end
+
+    def method_1_1
+      # ...
+    end
+
+    def method_1_2
+      # ...
+    end
+
+    def method_2
+      method_2_1
+      method_2_2
+    end
+
+    def method_2_1
+      # ...
+    end
+
+    def method_2_2
+      # ...
+    end
+end
+```
+
+Indent methods under `private` and other visibility modifiers to match this layout.
+
+### Bang methods
+
+Use `!` only when the method has a corresponding counterpart without `!`. Do not use `!` to flag destructive actions. Plenty of destructive Ruby and Rails methods have no bang.
 
 ## Application Structure
 
@@ -47,12 +141,29 @@ Help zmariscal build and maintain conventional Ruby on Rails applications using 
 
 ## Controllers
 
-- Keep controllers responsible for params, authorization, response handling, and orchestration.
-- Avoid placing business logic directly in controller actions.
-- Prefer controllers that directly call expressive model methods.
-- It is fine for controllers to invoke Active Record operations directly when the behavior is straightforward.
-- Use strong parameters.
-- Prefer RESTful routes and actions.
+Keep controllers responsible for params, authorization, response handling, and orchestration. Avoid placing business logic in controller actions. Use strong parameters.
+
+Thin controllers invoke a rich domain model directly. Do not introduce services or other artifacts to connect the two.
+
+Plain Active Record is fine:
+
+```ruby
+class Cards::CommentsController < ApplicationController
+  def create
+    @comment = @card.comments.create!(comment_params)
+  end
+end
+```
+
+For richer behavior, give the model an intention-revealing API and call it from the controller:
+
+```ruby
+class Cards::GoldnessesController < ApplicationController
+  def create
+    @card.gild
+  end
+end
+```
 
 ## Domain Models
 
@@ -63,11 +174,13 @@ Help zmariscal build and maintain conventional Ruby on Rails applications using 
 
 ## Service Objects and Form Objects
 
-- Do not introduce service objects by default.
-- Prefer vanilla Rails with thin controllers and rich models.
-- Use a service object or form object only when it is clearly justified by complexity or boundary concerns.
-- When used, treat it as a practical object, not a privileged architectural pattern.
-- Avoid creating service objects for simple CRUD or basic domain operations.
+Do not introduce service objects by default. Use a service or form object only when justified by complexity or boundary concerns. Treat it as an ordinary object, not a special layer:
+
+```ruby
+Signup.new(email_address: email_address).create_identity
+```
+
+Avoid creating service objects for simple CRUD or basic domain operations.
 
 ## Active Record
 
@@ -80,10 +193,20 @@ Help zmariscal build and maintain conventional Ruby on Rails applications using 
 
 ## Routing and Resources
 
-- Prefer resourceful routing.
-- Model web endpoints as CRUD operations on resources.
-- When an action does not map cleanly to a standard CRUD verb, prefer introducing a new resource over adding custom ad hoc actions.
-- Keep routes readable and unsurprising.
+Prefer resourceful routing. Model web endpoints as CRUD operations on resources. When an action does not map to a standard CRUD verb, introduce a new resource instead of a custom action.
+
+```ruby
+# Bad
+resources :cards do
+  post :close
+  post :reopen
+end
+
+# Good
+resources :cards do
+  resource :closure
+end
+```
 
 ## Views
 
@@ -94,10 +217,36 @@ Help zmariscal build and maintain conventional Ruby on Rails applications using 
 
 ## Background Jobs
 
-- Write shallow job classes that delegate real work to domain models or domain objects.
+Write shallow job classes that delegate real work to domain models.
+
 - Keep jobs small, idempotent, and focused on async orchestration.
 - Prefer passing records or IDs in the way the app already does consistently.
-- Consider `_later` for methods that enqueue jobs and `_now` for corresponding synchronous work when that naming pattern improves clarity.
+- Suffix `_later` for methods that enqueue a job.
+- Suffix `_now` for the corresponding synchronous method, typically on the same class that enqueued the job.
+
+```ruby
+module Event::Relaying
+  extend ActiveSupport::Concern
+
+  included do
+    after_create_commit :relay_later
+  end
+
+  def relay_later
+    Event::RelayJob.perform_later(self)
+  end
+
+  def relay_now
+    # ...
+  end
+end
+
+class Event::RelayJob < ApplicationJob
+  def perform(event)
+    event.relay_now
+  end
+end
+```
 
 ## Migrations
 
@@ -142,7 +291,4 @@ Help zmariscal build and maintain conventional Ruby on Rails applications using 
 - Mention file paths when suggesting changes.
 - Explain where code belongs and why.
 - Recommend the most conventional Rails approach first.
-- Prefer rich domain models over service layers by default.
-- Prefer RESTful resources over custom controller actions.
-- Prefer shallow jobs that call domain behavior instead of embedding business logic in jobs.
 - For upgrades or refactors, suggest incremental migration paths instead of all-at-once rewrites.
