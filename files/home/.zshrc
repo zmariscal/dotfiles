@@ -1,8 +1,11 @@
-# Dotfiles
-export DOTFILES=$HOME/dotfiles
+# Homebrew (Apple Silicon)
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# rv (Ruby Manager)
-eval "$(/opt/homebrew/bin/rv shell init zsh)"
+# Dotfiles (resolves the symlink back to the repo root)
+export DOTFILES="${${(%):-%x}:A:h:h:h}"
+
+# mise (Ruby and other runtimes)
+eval "$(mise activate zsh)"
 
 export PATH="$HOME/.local/bin:$PATH"
 
@@ -30,8 +33,8 @@ fpath=(~/.grok/completions/zsh $fpath)
 autoload -Uz compinit
 compinit -C
 
-# rv completions need compdef, so they load after compinit
-eval "$(/opt/homebrew/bin/rv shell completions zsh)"
+# mise completions need compdef, so they load after compinit
+command -v usage >/dev/null && eval "$(mise completion zsh)"
 
 # fzf widgets need a real interactive TTY (skip zsh -c / scripts)
 if [[ -o interactive && -z $ZSH_EXECUTION_STRING && -f /opt/homebrew/opt/fzf/shell/key-bindings.zsh ]]; then

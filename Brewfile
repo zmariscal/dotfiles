@@ -5,8 +5,12 @@ brew "fzf"
 # Shell & Prompt
 brew "oh-my-posh"
 
-# Ruby Version Manager
-brew "rv"
+# Runtime manager (Ruby)
+brew "mise"
+brew "usage"
+brew "openssl@3"
+brew "libyaml"
+brew "gmp"
 
 # Terminal
 cask "ghostty"
