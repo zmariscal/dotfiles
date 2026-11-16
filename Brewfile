@@ -1,5 +1,6 @@
 # CLI Tools
 brew "gh"
+brew "fzf"
 
 # Shell & Prompt
 brew "oh-my-posh"
