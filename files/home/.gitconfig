@@ -3,3 +3,11 @@
 	st = status
 [user]
 	name = Zack Mariscal
+	email = 10590756+zmariscal@users.noreply.github.com
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[push]
+	autoSetupRemote = true
