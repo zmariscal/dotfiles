@@ -15,6 +15,7 @@ This repository uses a **mirror structure**. Everything in `files/home/` is syml
 - `AGENTS.md`: The master directive for AI agents.
 - `files/home/`: Mirror of the home directory (contains `.zshrc`, `.irbrc`, etc.).
 - `.claude/skills/`: Domain-specific rulebooks for AI agents.
+- `.claude/rules/`: Path-scoped rules (e.g. `testing.md` for `spec/**`).
 - `scripts/setup`: The engine that links this repo to the system.
 
 
@@ -23,7 +24,6 @@ This repository uses a **mirror structure**. Everything in `files/home/` is syml
 
 - **Sandi Metz Rules**: Enforcing class and method size limits.
 - **Rails Performance**: Optimization for database queries and Sidekiq jobs.
-- **RSpec Testing**: Modern mocking (verifying doubles) and speed-focused spec suites.
 - **Modern Ruby**: Idiomatic use of Ruby 3+ (Pattern matching, endless methods).
 - **Vanilla Rails**: Conventional Rails — readable Ruby, REST resources, thin controllers, rich models, shallow jobs.
 - **Skill Creator**: A meta-skill for generating new instructions for this repo.

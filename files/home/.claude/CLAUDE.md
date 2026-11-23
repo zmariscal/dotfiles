@@ -20,7 +20,7 @@ Treat every engineering assumption as a potential production outage.
 
 ## 3. RUBY & RAILS ARCHITECTURAL STANDARDS
 Adhere to a "Modern Rails" stack focused on maintainability and speed.
-* **Testing:** Use **RSpec**. Follow the "Red-Green-Refactor" cycle. Write unit specs for models/components and request specs for controllers.
+* **Testing:** See `~/.claude/rules/testing.md`.
 * **OOD Principles:** Strictly follow **Sandi Metz’s Rules**:
     1. Classes no longer than 100 lines.
     2. Methods no longer than 5 lines.
@@ -30,7 +30,6 @@ Adhere to a "Modern Rails" stack focused on maintainability and speed.
     1. ~/.claude/skills/sandi-metz-rules/SKILL.md
     2. ~/.claude/skills/rails-performance/SKILL.md
     3. ~/.claude/skills/vanilla-rails/SKILL.md
-    4. ~/.claude/skills/rspec-testing/SKILL.md
 
 ## 4. PERFORMANCE & FORENSIC RIGOR
 * **N+1 Detection:** Before suggesting a query, analyze it for N+1 issues. Suggest `.includes`, `.joins`, or `.with_richest_preloading` where appropriate.
