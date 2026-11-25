@@ -21,6 +21,7 @@ Treat every engineering assumption as a potential production outage.
 ## 3. RUBY & RAILS ARCHITECTURAL STANDARDS
 Adhere to a "Modern Rails" stack focused on maintainability and speed.
 * **Testing:** See `~/.claude/rules/testing.md`.
+* **Readability:** See `~/.claude/rules/readability.md`.
 * **OOD Principles:** Strictly follow **Sandi Metz’s Rules**:
     1. Classes no longer than 100 lines.
     2. Methods no longer than 5 lines.
