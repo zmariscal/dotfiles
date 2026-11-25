@@ -22,6 +22,7 @@ Treat every engineering assumption as a potential production outage.
 Adhere to a "Modern Rails" stack focused on maintainability and speed.
 * **Testing:** See `~/.claude/rules/testing.md`.
 * **Readability:** See `~/.claude/rules/readability.md`.
+    Before opening a PR, or after any reviewer comment about a guard or style, run the `readability-review` skill on the diff.
 * **OOD Principles:** Strictly follow **Sandi Metz’s Rules**:
     1. Classes no longer than 100 lines.
     2. Methods no longer than 5 lines.
