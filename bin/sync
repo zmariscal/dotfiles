@@ -18,4 +18,15 @@ find "$DOTFILES_ROOT/files/home" -type f | while read -r src; do
   echo "  -> ~/$rel_path"
 done
 
+# Neutralize Ghostty's macOS override file (loaded AFTER ~/.config/ghostty/config)
+if [[ "$(uname)" == "Darwin" ]]; then
+  GHOSTTY_MAC="$HOME/Library/Application Support/com.mitchellh.ghostty/config"
+  if [[ -f "$GHOSTTY_MAC" ]] && grep -qvE '^[[:space:]]*(#|$)' "$GHOSTTY_MAC"; then
+    mv "$GHOSTTY_MAC" "$GHOSTTY_MAC.bak.$(date +%s)"
+    echo "  !! backed up non-empty Ghostty macOS config"
+  fi
+  mkdir -p "$(dirname "$GHOSTTY_MAC")"
+  [[ -f "$GHOSTTY_MAC" ]] || printf '# Keep empty; ~/.config/ghostty/config is the source of truth.\n' > "$GHOSTTY_MAC"
+fi
+
 echo "Done."
